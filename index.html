@@ -1,482 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KisanMind - Smart Agri Scanner</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        :root {
-            --primary: #2e7d32; /* Deep Forest Green */
-            --primary-light: #4caf50;
-            --accent: #f57f17; /* Harvest Gold */
-            --bg-light: #f1f8e9;
-            --white: #ffffff;
-            --danger: #d32f2f;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* 🌿 NATURE BACKGROUND UPDATE */
-        body {
-            /* Fallback color */
-            background-color: #1b5e20;
-            /* Nature Image from Unsplash */
-            background-image: linear-gradient(rgba(0, 50, 0, 0.6), rgba(0, 50, 0, 0.6)), url('https://images.unsplash.com/photo-1625246333195-092ef3021147?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            align-items: center; /* Center vertically on desktop */
-            min-height: 100vh;
-        }
-
-        /* Mobile Container */
-        .app-container {
-            background-color: rgba(255, 255, 255, 0.95); /* Slight transparency */
-            width: 100%;
-            max-width: 420px;
-            height: 100vh; /* Full height on mobile */
-            max-height: 900px; /* Limit height on desktop */
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-            overflow-x: hidden;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Desktop specific tweaks: Make it look like a floating phone */
-        @media (min-width: 480px) {
-            .app-container {
-                height: 90vh;
-                border-radius: 30px;
+ id="disease-name" id="match-badge"/ Disease Database
+        const diseases = [
+            {
+                name: "Yellow Leaf Curl Virus",
+                match: "98%",
+                description: "Detected: Leaves showing yellowing edges and upward curling. This is a viral disease usually spread by whiteflies.",
+                chemical: "Apply Imidacloprid 17.8 SL (0.5ml per liter of water).",
+                organic: "Spray Neem Oil (5ml/liter). Use yellow sticky traps in the field."
+            },
+            {
+                name: "Leaf Blight",
+                match: "92%",
+                description: "Detected: Brown lesions on leaves with yellow halos. Caused by fungal infection in humid conditions.",
+                chemical: "Apply Copper Oxychloride (2g per liter of water).",
+                organic: "Spray Garlic extract (10 clovesliter) with baking soda solution."
+            },
+           {
+                name: "Powdery Mildew",
+                match: "89%",
+                description: "Detected: White powdery coating on leaf surface. Fungal disease thriving in high humidity.",
+                chemical: "Apply Sulphur fungicide (2g per liter of water).",
+                organic: "Mix milk solution (1:0 milk:water) and spray weekly."
+            },
+            {
+                name: "Bacterial Leaf Spot",
+                match: "85%",
+                description: "Detected: Dark water-soaked spots on leaves turning brownBacterial infection spread by water splash.",
+                chemical: "Apply Streptomycin sulfate (0.5g per liter of water).",
+                organic: "Use Bordeaux mixture (copper sulfate + lime) spray."
+            },
+            {
+                name: "Aphid Infestation",
+                match: "94%",
+                description: "Detected: Yellowing leaves with sticky honeydew and curling. Small insects sucking plant sap.",
+                chemical: "Apply Dimethoate 30 EC (1ml per liter of water).",
+                organic: "Release ladybugs and spray soap solution (2ml dish soap/liter)."
             }
-        }
+        ];
 
-        /* Header */
-        header {
-            background: linear-gradient(135deg, var(--primary), #66bb6a);
-            padding: 25px 20px;
-            color: white;
-            border-bottom-left-radius: 25px;
-            border-bottom-right-radius: 25px;
-            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
-            z-index: 10;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .logo p { font-size: 0.8rem; opacity: 0.95; font-weight: 400; margin-top: -2px; }
-
-        /* Main Content Area */
-        .content-area {
-            padding: 25px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Upload Box */
-        .upload-box {
-            width: 100%;
-            height: 240px;
-            border: 2px dashed #81c784;
-            background: linear-gradient(to bottom, #f1f8e9, #ffffff);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .upload-box:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.15);
-        }
-
-        .upload-icon-circle {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #a5d6a7, #e8f5e9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-        }
-
-        .upload-icon-circle i {
-            font-size: 2rem;
-            color: var(--primary);
-        }
-
-        .upload-text { color: var(--primary); font-weight: 700; font-size: 1.1rem; }
-        .upload-subtext { color: #757575; font-size: 0.85rem; margin-top: 5px; }
-
-        /* Preview & Scanner VFX */
-        #scanner-container {
-            display: none;
-            width: 100%;
-            height: 320px;
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-            background: #000;
-        }
-
-        #preview-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.8;
-        }
-
-        /* THE VFX: Laser Scan Effect */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: #00ff00;
-            box-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00;
-            animation: scan 2s linear infinite;
-            z-index: 5;
-        }
-
-        .scan-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,255,0,0), rgba(0,255,0,0.2) 50%, rgba(0,255,0,0));
-            animation: scanBackground 2s linear infinite;
-            z-index: 4;
-        }
-
-        @keyframes scan {
-            0% { top: -10%; }
-            100% { top: 110%; }
-        }
-
-        @keyframes scanBackground {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
-        .scanning-text {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: #00ff00;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 6;
-            letter-spacing: 1.5px;
-            border: 1px solid #00ff00;
-            box-shadow: 0 0 10px rgba(0,255,0,0.3);
-        }
-
-        /* Result Card */
-        #result-card {
-            display: none;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .disease-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 15px;
-        }
-
-        .disease-name {
-            color: var(--danger);
-            font-size: 1.4rem;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-
-        .match-badge {
-            background: #ffebee;
-            color: var(--danger);
-            font-size: 0.75rem;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .description {
-            color: #455a64;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        /* Remedy Cards */
-        .remedy-card {
-            background: #fafafa;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 5px solid #ddd;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        }
-
-        .remedy-card.chemical { border-left-color: var(--danger); background: #fff8f8; }
-        .remedy-card.organic { border-left-color: var(--primary); background: #f1f8e9; }
-
-        .remedy-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-
-        .remedy-text { font-size: 0.9rem; color: #37474f; }
-
-        /* Voice Button */
-        .voice-btn {
-            background: linear-gradient(135deg, #ff8f00, #f57c00);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(245, 124, 0, 0.4);
-            transition: transform 0.2s;
-            margin-top: 15px;
-        }
-
-        .voice-btn:active { transform: scale(0.97); }
-
-        #file-input { display: none; }
-
-    </style>
-</head>
-<body>
-
-    <div class="app-container">
-        
-        <!-- Header -->
-        <header>
-            <div class="header-content">
-                <div class="logo">
-                    <h1>KisanMind <i class="fas fa-leaf"></i></h1>
-                    <p>AI Agri-Doctor</p>
-                </div>
-                <div class="menu-icon">
-                    <i class="fas fa-bars" style="font-size: 1.3rem;"></i>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <div class="content-area">
-
-            <!-- 1. Upload Section -->
-            <div class="upload-box" id="upload-box" onclick="document.getElementById('file-input').click()">
-                <div class="upload-icon-circle">
-                    <i class="fas fa-camera"></i>
-                </div>
-                <div class="upload-text">Tap to Scan Leaf</div>
-                <div class="upload-subtext">Open Camera or Gallery</div>
-                <input type="file" id="file-input" accept="image/*" onchange="handleUpload(event)">
-            </div>
-
-            <!-- 2. Scanner VFX Container (Hidden initially) -->
-            <div id="scanner-container">
-                <img id="preview-image" src="" alt="Leaf">
-                <!-- VFX Elements -->
-                <div class="scan-overlay"></div>
-                <div class="scan-line"></div>
-                <div class="scanning-text">AI DIAGNOSING...</div>
-            </div>
-
-            <!-- 3. Result Card (Hidden initially) -->
-            <div id="result-card">
-                <div class="disease-header">
-                    <div class="disease-name">Yellow Leaf Curl Virus</div>
-                    <div class="match-badge">98% MATCH</div>
-                </div>
+        // 1.  
                 
-                <p class="description" id="diagnosis-text">
-                    Detected: Leaves showing yellowing edges and upward curling. This is a viral disease usually spread by whiteflies.
-                </p>
-
-                <!-- Chemical Remedy -->
-                <div class="remedy-card chemical">
-                    <div class="remedy-title" style="color: #c62828;">
-                        <i class="fas fa-flask"></i> Chemical Solution
-                    </div>
-                    <div class="remedy-text" id="chem-text">Apply Imidacloprid 17.8 SL (0.5ml per liter of water).</div>
-                </div>
-
-                <!-- Organic Remedy -->
-                <div class="remedy-card organic">
-                    <div class="remedy-title" style="color: #2e7d32;">
-                        <i class="fas fa-seedling"></i> Organic Desi Upay
-                    </div>
-                    <div class="remedy-text" id="org-text">Spray Neem Oil (5ml/liter). Use yellow sticky traps in the field.</div>
-                </div>
-
-                <!-- Voice Button -->
-                <button class="voice-btn" onclick="toggleVoice()">
-                    <i class="fas fa-volume-high" id="voice-icon"></i> 
-                    <span id="voice-text">Listen in English</span>
-                </button>
+                // Randomly select adisease constandomDisease = diseas[Math.floor(Math.random() * diseases.length)];
                 
-                <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="resetApp()" style="background:none; border:none; color:#78909c; font-size:0.9rem; text-decoration:underline; cursor:pointer; font-weight: 500;">Scan Another Plant</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <script>
-        // DOM Elements
-        const uploadBox = document.getElementById('upload-box');
-        const scannerContainer = document.getElementById('scanner-container');
-        const resultCard = document.getElementById('result-card');
-        const previewImage = document.getElementById('preview-image');
-        const fileInput = document.getElementById('file-input');
-        
-        // Voice State
-        let isSpeaking = false;
-        let synthesis = window.speechSynthesis;
-        let currentUtterance = null;
-
-        // 1. Handle File Upload
-        function handleUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Set Image
-                    previewImage.src = e.target.result;
-                    
-                    // UI Transition
-                    uploadBox.style.display = 'none';
-                    resultCard.style.display = 'none';
-                    scannerContainer.style.display = 'block';
-                    
-                    // Start Simulation
-                    startScanningSimulation();
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // 2. Simulation Logic (VFX Timing)
-        function startScanningSimulation() {
-            // Keep scanner on for 2.5 seconds
-            setTimeout(() => {
-                scannerContainer.style.display = 'none'; 
-                resultCard.style.display = 'block';
-            }, 2500); 
-        }
-
-        // 3. Reset Function
-        function resetApp() {
-            // Stop voice if playing
-            if (isSpeaking) {
-                synthesis.cancel();
-                isSpeaking = false;
-            }
-            // Reset UI
-            resultCard.style.display = 'none';
-            scannerContainer.style.display = 'none';
-            uploadBox.style.display = 'flex';
-            fileInput.value = ''; // Clear input
-        }
-
-        // 4. Voice Assistant Logic
-        function toggleVoice() {
-            const btnText = document.getElementById('voice-text');
-            const btnIcon = document.getElementById('voice-icon');
-
-            if (isSpeaking) {
-                // Stop Speaking
-                synthesis.cancel();
-                isSpeaking = false;
-                btnText.innerText = "Listen in English";
-                btnIcon.className = "fas fa-volume-high";
-            } else {
-                // Start Speaking
-                const diagnosis = document.getElementById('diagnosis-text').innerText;
-                const chem = document.getElementById('chem-text').innerText;
-                const org = document.getElementById('org-text').innerText;
+                // Update result card with random disease data
+                document.getElementById('disease-name').innerText = randomDisease.name;
+                document.getElementById('match-badge').innerText = randomDisease.match + ' MATCH';
+                document.getElementById('diagnosis-text').innerText = randomDisease.description;
+                document.getElementById('chem-text').innerText = randomDisease.chemical;
+                document.getElementById('org-text').innerText = randomDisease.organic;
                 
-                const fullText = `Disease detected: Yellow Leaf Curl Virus. ${diagnosis}. Chemical solution: ${chem}. Organic solution: ${org}`;
-
-                currentUtterance = new SpeechSynthesisUtterance(fullText);
-                currentUtterance.lang = 'en-US'; // Strict English
-                currentUtterance.rate = 0.9;
-                
-                currentUtterance.onstart = () => {
-                    isSpeaking = true;
-                    btnText.innerText = "Stop Audio";
-                    btnIcon.className = "fas fa-stop";
-                };
-
-                currentUtterance.onend = () => {
-                    isSpeaking = false;
-                    btnText.innerText = "Listen in English";
-                    btnIcon.className = "fas fa-volume-high";
-                };
-
-                synthesis.speak(currentUtterance);
-            }
-        }
-    </script>
-</body>
-</html>
+                resseaseNme = document.etElemetById('disease-name').innerText;
+                const diagn${diseName}
